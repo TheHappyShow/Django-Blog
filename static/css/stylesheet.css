@@ -1,0 +1,55 @@
+/* Общие стили */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fdfdfd;
+    margin: 0;
+    padding: 0;
+}
+
+/* Категории под navbar */
+.category-bar {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+}
+
+.category-bar a {
+    margin-right: 15px;
+    color: #343a40;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.category-bar a:hover {
+    text-decoration: underline;
+}
+
+.category-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
+
+.category-link {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 500;
+}
+
+.category-link:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.no-categories {
+    color: #888;
+    font-style: italic;
+}

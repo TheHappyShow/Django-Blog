@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Изменение статьи{% endblock %}
+
+{% block content %}
+
+
+
+<div class="card mb-3 border-0 nth-shadow" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-body py-3 px-4">
+        <div class="card-title nth-card-title mb-3">
+            <h4 class="mb-0">Редактирование статьи</h4>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.media }}
+
+            <div class="form-fields">
+                {{ form.as_p }}
+            </div>
+
+            <div class="d-grid gap-2 d-md-block mt-3 text-end">
+                <button type="submit" class="btn btn-dark btn-sm">Сохранить изменения</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

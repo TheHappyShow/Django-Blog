@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Подтверждение OTP{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 400px;">
+    <div class="card shadow rounded-4">
+        <div class="card-body">
+        {% if request.user.verified == False %}
+            <h4 class="card-title text-center mb-4">Подтверждение кода</h4>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.otp_code.label_tag }}
+                    {{ form.otp_code }}
+                    {% if form.otp_code.errors %}
+                        <div class="text-danger small">
+                            {{ form.otp_code.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+            </form>
+
+            {% if error_message %}
+                <div class="alert alert-danger mt-3">{{ error_message }}</div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="alert alert-success mt-3">{{ success_message }}</div>
+            {% endif %}
+
+            {% else %}
+            <h2>Пользователь уже верифицирован</h2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

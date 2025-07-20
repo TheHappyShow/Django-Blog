@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Создание статьи{% endblock %}
+
+{% block content %}
+
+
+<div class="card mb-3 border-0 nth-shadow" style="max-width: 600px; margin: 0 auto;">
+    <div class="card-body py-3 px-4">
+        <div class="card-title nth-card-title mb-3">
+            <h4 class="mb-0">Добавление статьи</h4>
+        </div>
+
+        <form method="post" action="{% url 'article_create' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.media }}
+
+            <div class="form-fields">
+                {{ form.as_p }}
+            </div>
+
+            <div class="d-grid gap-2 d-md-block mt-3 text-end">
+                <button type="submit" class="btn btn-dark btn-sm">Добавить статью</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-fields p {
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+}
+</style>
+
+{% endblock %}

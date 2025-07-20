@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        {% if article.thumbnail %}
+        <img src="{{ article.thumbnail.url }}" class="card-img-top" alt="{{ article.title }}">
+        {% endif %}
+        <div class="card-body">
+            <h2 class="card-title">{{ article.title }}</h2>
+            <p class="text-muted">
+                Категория: <strong>{{ article.category.name }}</strong> |
+                Автор: <strong>{{ article.user.username }}</strong> |
+                Просмотров: {{ article.view_count }}
+            </p>
+            <hr>
+            <div class="card-text">
+                {{ article.description|safe }}
+            </div>
+            <hr>
+            <small class="text-muted">
+                Создано: {{ article.created_at|date:"d.m.Y H:i" }}<br>
+                Обновлено: {{ article.updated_at|date:"d.m.Y H:i" }}
+                {% if request.user.is_superuser or request.user == article.user %}
+                <a href="{% url 'article_update' article.slug %}" class="btn btn-primary btn-sm ms-2">
+                    ✏️ Редактировать
+                </a>
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteArticleModal{{ article.pk }}">
+                    🗑️ Удалить
+                </button>
+                {% include 'app/post_delete.html' %}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- Форма добавления комментария -->
+{% if user.is_authenticated %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Оставить комментарий</h5>
+            <form method="post" action="{% url 'comment_create' article.slug %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ comment_form.text.label_tag }}
+                    <textarea name="text" class="form-control" rows="4" placeholder="Введите комментарий здесь...">
+                        {{ comment_form.text.value|default_if_none:"" }}
+                    </textarea>
+                    {% if comment_form.text.errors %}
+                    <div class="text-danger small">{{ comment_form.text.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container mt-5">
+    <div class="alert alert-warning">
+        <a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий.
+    </div>
+</div>
+{% endif %}
+
+<!-- Список комментариев -->
+<div class="container mt-5">
+    <h4>Комментарии ({{ comments.count }})</h4>
+    {% if comments %}
+    <ul class="list-group">
+        {% for comment in comments %}
+        <li class="list-group-item">
+            <strong>{{ comment.user.username }}</strong>
+            <span class="text-muted small">— {{ comment.created_at|date:"d.m.Y H:i" }}</span>
+            <p class="mt-2 mb-1">{{ comment.text }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">Комментариев пока нет.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

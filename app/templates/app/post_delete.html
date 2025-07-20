@@ -1,0 +1,24 @@
+<div class="modal fade" id="deleteArticleModal{{ article.pk }}" data-bs-backdrop="static" tabindex="-1"
+     aria-labelledby="deleteArticleLabel{{ article.pk }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteArticleLabel{{ article.pk }}">Удалить</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form action="{% url 'article_delete' article.pk %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <h5>Вы точно хотите удалить статью {{ article.title }}?</h5>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-danger">Подтвердить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

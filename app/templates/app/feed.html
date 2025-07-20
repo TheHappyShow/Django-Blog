@@ -1,0 +1,129 @@
+
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+        <a href="{% if request.GET.status == 'newest' %}?status=oldest{% else %}?status=newest{% endif %}"
+           class="btn btn-outline-primary {% if request.GET.status == 'newest' %}active{% endif %}">
+            По свежести
+        </a>
+        <a href="{% if request.GET.status == 'most_viewed' %}?status=least_viewed{% else %}?status=most_viewed{% endif %}"
+           class="btn btn-outline-primary {% if request.GET.status == 'most_viewed' %}active{% endif %}">
+            По просмотрам
+        </a>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-10"> <!-- Широкая карточка по центру -->
+                {% for article in articles %}
+                    <div class="card mb-5 shadow rounded-4 border-0 overflow-hidden">
+                        <div class="row g-0">
+                            <!-- Изображение статьи -->
+                            <div class="col-md-5">
+                                <img src="{{ article.thumbnail.url }}" class="img-fluid h-100 w-100 object-fit-cover"
+                                     alt="Обложка статьи">
+                            </div>
+
+                            <!-- Текстовая часть -->
+                            <div class="col-md-7">
+                                <div class="card-body d-flex flex-column justify-content-between h-100">
+
+                                    <!-- Заголовок -->
+                                    <h2 class="card-title mb-3">{{ article.title }}</h2>
+
+                                    <!-- Описание -->
+                                    <p class="card-text fs-5 text-muted">{{ article.description|truncatewords:40|safe }}</p>
+
+                                    <!-- Метаданные -->
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between flex-wrap">
+                                            <small class="text-muted">Опубликовано: {{ article.created_at|date:"d.m.Y H:i" }}</small>
+                                            <small class="text-muted">Просмотров: {{ article.view_count }}</small>
+                                        </div>
+
+                                        <!-- Действия -->
+                                        <div class="mt-3 d-flex gap-3 align-items-center flex-wrap">
+
+                                            <!-- Подробнее -->
+                                            <a href="{% url 'post-detail' article.slug %}"
+                                               class="btn btn-sm btn-primary">Подробнее</a>
+
+                                            <!-- Редактировать -->
+                                            {% if request.user.is_superuser or request.user == article.user %}
+                                            <a href="{% url 'article_update' article.slug %}"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil-square">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                         fill="currentColor" class="bi bi-pencil-square"
+                                                         viewBox="0 0 16 16">
+                                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                                        <path fill-rule="evenodd"
+                                                              d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                                    </svg>
+                                                </i>
+                                            </a>
+
+                                            <!-- Удалить -->
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteArticleModal{{ article.pk }}">
+                                                <i class="bi bi-trash-fill">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                         fill="currentColor" class="bi bi-trash-fill"
+                                                         viewBox="0 0 16 16">
+                                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                                    </svg>
+                                                </i>
+                                            </button>
+
+                                            {% include 'app/post_delete.html' %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <nav aria-label="Страницы">
+    <ul class="pagination justify-content-center">
+        {% with status=request.GET.status %}
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if status %}&status={{ status }}{% endif %}">&laquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status %}&status={{ status }}{% endif %}">‹</a>
+                </li>
+            {% endif %}
+
+            {# текущая страница и рядом #}
+            {% for num in page_obj.paginator.page_range %}
+                {% if num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                    <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if status %}&status={{ status }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status %}&status={{ status }}{% endif %}">›</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status %}&status={{ status }}{% endif %}">&raquo;</a>
+                </li>
+            {% endif %}
+        {% endwith %}
+    </ul>
+</nav>
+
+{% endblock %}
